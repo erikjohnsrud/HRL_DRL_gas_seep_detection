@@ -1,4 +1,6 @@
 # train_PPO.py
+import argparse
+
 import gymnasium as gym
 from stable_baselines3 import PPO
 import pickle  # saving the stats
@@ -11,13 +13,26 @@ from HUGIN_gym.envs.wrappers.FilterObservationWrapper import FilterObservationWr
 from HUGIN_gym.callbacks.EpisodeStatsCallback import EpisodeStatsCallback
 from HUGIN_gym.utils.build_train_config import build_training_config_ppo
 from HUGIN_gym.envs.wrappers.GPWrapper import GPWrapper
+from HUGIN_gym.training.train_PPO_config import FULL_CONFIG, PAPER_CONFIG, SMOKE_CONFIG
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    preset_group = parser.add_mutually_exclusive_group()
+    preset_group.add_argument("--smoke", action="store_true")
+    preset_group.add_argument("--paper", action="store_true")
+    preset_group.add_argument("--full", action="store_true")
+    args = parser.parse_args()
+    if args.smoke:
+        config = SMOKE_CONFIG
+    elif args.paper:
+        config = PAPER_CONFIG
+    else:
+        config = FULL_CONFIG
 
-    MAX_EPS_LEN = 8000
-    NUM_ENVS = 12
-    GP =True
+    MAX_EPS_LEN = config["max_episode_length"]
+    NUM_ENVS = config["num_envs"]
+    GP = config["gp"]
     ACCURACY_GOALS = [0.90, 1.0, 1.0] #0.9
     SUB_AGENT_TRAIN_ON_GP = True
     AGENT_TYPE = "SPACE"
@@ -64,7 +79,7 @@ def main():
         ]
         agent_reward_path = "./HUGIN_gym/envs/core/rewards/agent2_plume.py"
 
-    NAME = "3D_PPO_border_GP_sub_task_completion_41x41x41_7k_GP"#spawn_close_to_source
+    NAME = config["name"]
     saving_location = f"../trained-agents/{NAME}"
     loading_location = "../trained-agents/..._what_so_ever_..."
 
@@ -139,10 +154,10 @@ def main():
             "MultiInputPolicy",
             env,
             learning_rate=3e-4,
-            n_steps=2048,               # per env; effective batch size = n_steps * NUM_ENVS
-            batch_size=1024,             # must divide n_steps * NUM_ENVS in SB3, but SB3 will handle remainder
-            n_epochs=4, #4 for longer episodes
-            gamma=0.9997,                # keep your discount for comparability
+            n_steps=config["n_steps"],   # per env; effective batch size = n_steps * NUM_ENVS
+            batch_size=config["batch_size"],
+            n_epochs=config["n_epochs"],
+            gamma=0.9975,                # keep your discount for comparability
             gae_lambda=0.95,
             clip_range=0.2,
             ent_coef=0.01,
@@ -153,9 +168,9 @@ def main():
             # tensorboard_log="./tensorboard_logs/",
         )
 
-    max_steps = 100_000_000
+    max_steps = config["max_steps"]
     # For PPO, save every X *env steps*; same formula as before:
-    checkpoint_steps = 10_500_020 // NUM_ENVS
+    checkpoint_steps = config["checkpoint_steps"] // NUM_ENVS
 
     stats_callback = EpisodeStatsCallback(
         max_episode_length=MAX_EPS_LEN,

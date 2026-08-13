@@ -38,7 +38,7 @@ class HUGIN(gym.Env):
         self.domain_limit = {
             "x": 20,#22
             "y": 20,#22
-            "z": 20, #1
+            "z": 0, #1
         }
         self.eps = 0.5 # uncertainty acceptance at boarders. NOTE, due to the coordinate transform due to different angle states for the actions, we get drifting floats. For isntance, -4,00000002... .
         if self.render_mode == "human":

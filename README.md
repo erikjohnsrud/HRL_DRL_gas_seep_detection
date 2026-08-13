@@ -79,6 +79,64 @@ the_project/
 └── README.md,  
 ```
 
+The central environment is HUGIN_gym/envs/HUGIN_env.py. It models:
+- A bounded 3D voxel domain, nominally 41 x 41 x 41
+- AUV position and orientation
+- Five discrete movement actions
+- One or more Gaussian gas sources
+- Visited, above-threshold, and plume-border maps
+- Task-specific observations, rewards, and termination conditions
+
+Three low-level tasks are supported:
+- Space exploration: maximize general map coverage
+- Plume exploration: map regions above the concentration threshold
+- Border delineation: trace the plume's threshold boundary
+
+Reward implementations are under HUGIN_gym/envs/core/rewards/.
+
+### Hierarchical RL
+
+HUGIN_gym/envs/HRL_env.py provides a meta-environment. A high-level controller chooses among pretrained low-level policies:
+1. Explore the space
+2. Characterize the plume
+3. Delineate its border
+
+The selected policy executes primitive movements for several steps before control returns to the meta-controller. Option wrappers are defined in HUGIN_gym/agents/options.py.
+
+### Mapping
+
+HUGIN_gym/envs/wrappers/GPWrapper.py adds belief-based mapping:
+- Collects position and concentration measurements
+- Fits a scikit-learn Gaussian process
+- Predicts concentrations throughout the domain
+- Builds estimated plume and border maps
+- Calculates coverage, RMSE, and classification metrics
+
+This is computationally expensive in 3D because the GP may be refitted and evaluated over the full grid after many actions.
+
+### Training
+
+Training scripts are in HUGIN_gym/training/:
+- train_PPO.py
+- train_DDQN.py, which actually uses Stable-Baselines3's DQN
+- train_SAC.py
+- train_HRL(ppo).py
+- train_HRL(ddqn).py
+
+They use custom feature extractors from HUGIN_gym/agents/feature_extractor/, vectorized environments, checkpoints, and episode-statistics callbacks.
+
+### Evaluation And Visualization
+
+HUGIN_gym/evaluation/ contains:
+- Trained-policy rollouts
+- Manual control
+- Vectorized validation
+- HRL evaluation
+- Lawnmower-pattern baselines
+- Training-curve and confusion-matrix analysis
+
+Meshcat visualization under HUGIN_gym/envs/core/visualisation/ renders the AUV, trajectory, domain, and concentration field. Matplotlib utilities visualize GP predictions and map coverage.
+
 ## 🔧 Configuration
 
 The environment can be configured through various parameters:

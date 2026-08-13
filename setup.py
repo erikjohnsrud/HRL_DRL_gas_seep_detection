@@ -15,7 +15,10 @@ setup(
         "meshcat>=0.3.2",
         "numpy>=2.1.3",
         "scipy>=1.14.1",
-        "stable-baselines3[extra]>=2.3.2",
+        "stable-baselines3>=2.3.2",
+        "rich",
+        "tqdm",
+        "tensorboard",
         "scikit-learn>=1.8.0", # modifiable
     ],
 )
