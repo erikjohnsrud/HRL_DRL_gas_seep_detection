@@ -6,7 +6,7 @@ from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Normalize
 
 # --- Load ---
-base_path = os.path.join(os.path.dirname(__file__), "../../../trained-agents/HRL_3agents_new_REW")
+base_path = os.path.join(os.path.dirname(__file__), "../../../trained-agents/paper_2D_PPO_space_10M")
 with open(os.path.join(base_path, "training_stats.pkl"), "rb") as f:
     stats = pickle.load(f)
 
@@ -112,5 +112,7 @@ plot_reward_curves(axes[-1], stats["episode_rewards"])
 
 # --- Save ---
 plt.tight_layout()
-#plt.savefig(os.path.join(base_path, "training_stats.png"))
-plt.show()
+figpath = os.path.join(base_path, "training_stats.png")
+plt.savefig(figpath)
+os.system(f"display {figpath}")
+#plt.show()
