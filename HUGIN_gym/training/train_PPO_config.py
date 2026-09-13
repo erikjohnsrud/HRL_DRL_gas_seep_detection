@@ -6,7 +6,7 @@ FULL_CONFIG = {
     "n_steps": 2048,
     "batch_size": 1024,
     "n_epochs": 4,
-    "max_steps": 100_000_000,
+    "max_steps": 300_000,   #training steps
     "checkpoint_steps": 10_500_020,
 }
 
