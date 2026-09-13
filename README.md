@@ -155,3 +155,16 @@ This project is licensed under the MIT License
 Matthias Schmitt - [@MatthiasHansHeinrichSchmitt](https://github.com/MatthiasHansHeinrichSchmitt) 
 
 Project Link: [https://github.com/MatthiasHansHeinrichSchmitt/HRL_DRL_gas_seep_detection.git](https://github.com/MatthiasHansHeinrichSchmitt/HRL_DRL_gas_seep_detection.git)
+
+
+## Quick Setup
+```bash
+#Standing in the repo, run:
+cd HRL_DRL_gas_seep_detection
+python -m venv .venv
+.venv\Scripts\activate        # PowerShell/cmd (Windows)
+pip install -e .
+python -m HUGIN_gym.evaluation.test_PPO
+python -m HUGIN_gym.training.train_PPO
+```
+
